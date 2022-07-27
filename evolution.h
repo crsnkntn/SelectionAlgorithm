@@ -16,7 +16,7 @@ namespace Evolution {
             FitnessGauge fitness;
     
         public:
-            Thing () {}
+            Thing (FitnessGauge f) {}
 
             FitnessGauge getFitness () {
                 return fitness;
@@ -54,6 +54,8 @@ namespace Evolution {
             }
         
         public:
+            Selector () {}
+
             Selector (FitnessGauge tf, int gf, 
                 typename std::vector<Evolution::Thing<FitnessGauge> *>::iterator pf,
                 typename std::vector<Evolution::Thing<FitnessGauge> *>::iterator pb,

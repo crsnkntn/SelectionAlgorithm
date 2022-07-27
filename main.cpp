@@ -14,14 +14,17 @@
 struct StringFitnessGauge {
     int fitnessScore;
     std::string fitness;
+
+    StringFitnessGauge (int s, std::string f) :  fitnessScore(s), fitness(f) {}
 };
 
-class StringThing : public Evolution::Thing<StringFitnessGauge> {
+template <typename FitnessGauge>
+class StringThing : public Evolution::Thing<FitnessGauge> {
     private:
         std::vector<int> genes;
 
     public:
-        StringThing (int thingSize, std::ifstream& fin) {
+        StringThing (int thingSize, std::ifstream& fin) : Evolution::Thing(FitnessGauge()) {
             int gene = 0;
             for (int j = 0; j < thingSize; j++) {
                 fin >> gene;
@@ -48,13 +51,12 @@ class StringThing : public Evolution::Thing<StringFitnessGauge> {
         friend std::ostream& operator<<(std::ostream& os, const StringThing& thing);
 };
 
-std::ostream& operator<<(std::ostream& os, const StringThing& thing) {
-    for (int i = 0; i < thing.genes.size(); i++)
-        os << thing.genes[i] << " ";
-    os << "\n";
+std::ostream& operator<<(std::ostream& os, const Thing& thing) {
+    os << thing;
     return os;
 }
 
+template <typename FitnessGauge>
 class StringSelector : public Evolution::Selector<StringFitnessGauge> {
     private:
         // implement the various fitness functions here
@@ -93,11 +95,11 @@ int main (int argc, char* argv[]) {
 
     Evolution::Selector<Evolution::Thing<StringFitnessGauge>> selector(
         StringFitnessGauge {atoi(argv[3]), "TARGET_FITNESS"}, atoi(argv[4]),
-        things.front(), things.back(),  words.front(), words.back()
+        things.begin(), things.end(),  words.begin(), words.end()
     );
 
     for (int gen = 0; gen < atoi(argv[5]); gen++) {
-        std::cout << "Generation " << gen << "\n"; 
+        std::cout << "Generation " << gen << "\n";
         if (!selector.doGeneration()) {
             std::cout << "Convergence at " << gen << "\n";
         }
